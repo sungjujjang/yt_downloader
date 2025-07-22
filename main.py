@@ -8,13 +8,16 @@ DOWNLOAD_DIR = "C:\\yt_downloads"
 
 downloading = []
 
+# download dir 체킹 후 없으면 생성
 if not os.path.exists(DOWNLOAD_DIR):
     os.mkdir(DOWNLOAD_DIR)
 
+# int형 초를 받아서 h:m:s 로 변환 문자열
 def s_to_hms(s: int):
     h, m, s = s//3600, s%3600//60, s%3600%60
     return f"{str(h) + ':' if h > 0 else ''}{str(m) + ':' if m > 0 else ''}{str(s) if s > 0 else ''}"
 
+# moviepy 사용해서 비디오에 오디오 합체
 def video_add_audio(video_path, audio_path, output_file_path):
     video = VideoFileClip(video_path)
     new_audio = AudioFileClip(audio_path)
@@ -22,12 +25,14 @@ def video_add_audio(video_path, audio_path, output_file_path):
     video = video.set_audio(new_audio)
     video.write_videofile(output_file_path, codec='libx264', audio_codec='aac')
 
+# 파일 이름 오류 안나게 수정
 def convert_to_filename(name):
     invalid_chars = '\\/:*?"<>|'
     for char in invalid_chars:
         name = name.replace(char, '')
     return name
 
+# 비디오 다운로드 함수수
 def download_video():
     global downloading
     try:
@@ -75,6 +80,7 @@ def download_video():
     except:
         pyautogui.alert(text=f'영상 다운로드에 오류가 생겼습니다. 다시 시도해 주세요.', title='유튜브 영상 다운로더', button='OK')
 
+# 변수 이중으로 두어 동시 다운로드 가능하게 스레딩 사용
 def on_clicked():
     work = threading.Thread(target=download_video)
     work.start()
